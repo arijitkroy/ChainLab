@@ -37,7 +37,7 @@ Open `http://localhost:3000`. The backend listens on port 4000 by default. To us
 
 ## Vercel
 
-Deploy `frontend/` and `backend/` as separate Vercel projects using each directory's `vercel.json`. Configure `NEXT_PUBLIC_API_URL` in the frontend project to the deployed backend origin. The web client polls snapshots when WebSockets are unavailable.
+Deploy the repository as one Vercel project from its root. The root `vercel.json` declares the `frontend` and `backend` services, routes `/api/backend/*` to Express, and sends all other paths to Next.js. Set `NEXT_PUBLIC_API_URL` to `https://<deployment-domain>/api/backend` for Production, Preview, and Development.
 
 Vercel's serverless functions do not provide persistent WebSockets, background mining, or shared durable process memory. The deployment is suitable for an HTTP demonstration, not a reliable shared simulation. See [Vercel deployment](docs/07-vercel-deployment.md) before publishing.
 

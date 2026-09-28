@@ -1,25 +1,19 @@
 # 7. Vercel Deployment
 
-ChainLab is configured as two independent Vercel projects from one repository. Deploy `frontend/` and `backend/` separately; each folder contains its own `vercel.json`.
+ChainLab's root `vercel.json` configures the repository as one Vercel deployment with two services. The `frontend` service runs Next.js from `frontend/`; the `backend` service runs the Express API from `backend/`. Requests under `/api/backend` are routed to the API and all other paths go to the frontend service.
 
-## 1. Deploy the backend API
+## Deploy the combined project
 
-1. Import the repository as a Vercel project.
-2. Set the project's **Root Directory** to `backend`.
-3. Keep the detected Node.js runtime and install command (`npm install`).
-4. Deploy. Vercel uses `backend/vercel.json` to route HTTP requests to `server.js`, which exports the Express app.
-5. Copy the resulting HTTPS URL, for example `https://chainlab-api-your-team.vercel.app`.
+1. Import the repository into Vercel and leave the project **Root Directory** at the repository root.
+2. Keep the detected Node.js runtime and npm install/build settings for the two configured services.
+3. Add `NEXT_PUBLIC_API_URL` for Production, Preview, and Development. Set it to `https://<deployment-domain>/api/backend` (for example, `https://chainlab-your-team.vercel.app/api/backend`).
+4. Deploy the project. The root rewrites send `/api/backend/...` requests to the backend service and other requests to the frontend.
 
-The local process still starts with `npm run dev` and provides both HTTP and `ws` WebSocket support. When `VERCEL=1`, `server.js` exports the Express app without calling `listen()` or creating a WebSocket listener, as required for a serverless function.
+The backend strips the `/api/backend` service prefix if it is present, so its routes remain `/api/...` internally. Direct local routes such as `http://localhost:4000/api/simulation` continue to work unchanged. The backend entry exports the Express app without calling `listen()` or opening a WebSocket listener in Vercel; locally it still starts HTTP and `ws` together.
 
-## 2. Deploy the frontend
+The nested `frontend/vercel.json` and `backend/vercel.json` are available when deploying either app as a separate Vercel project. For the combined two-service deployment described here, use the repository-root config.
 
-1. Create a second Vercel project from the same repository.
-2. Set its **Root Directory** to `frontend`.
-3. Add `NEXT_PUBLIC_API_URL` for Production, Preview, and Development as appropriate. Set it to the backend deployment's HTTPS origin, with no required trailing slash.
-4. Deploy. `frontend/vercel.json` declares the Next.js framework.
-
-The API URL is embedded into the client bundle at build time. Redeploy the frontend after changing it. Each Preview frontend should point at an API intended for Preview if you need isolated preview environments.
+`NEXT_PUBLIC_API_URL` is embedded into the frontend bundle at build time. Redeploy after changing it. Preview deployments should set the variable to the corresponding preview deployment URL.
 
 ## Runtime limitations
 
@@ -32,7 +26,7 @@ The API URL is embedded into the client bundle at build time. Redeploy the front
 
 | Setting | Local default | Vercel |
 | --- | --- | --- |
-| API origin | `http://localhost:4000` | `NEXT_PUBLIC_API_URL` |
+| API origin | `http://localhost:4000` | `https://<deployment-domain>/api/backend` |
 | Realtime | WebSocket `/ws` | HTTP polling fallback |
 | State | Process memory | Per-function-instance memory (not durable/shared) |
 

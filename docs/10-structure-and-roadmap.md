@@ -3,6 +3,7 @@
 ## Repository layout
 
 ```text
+vercel.json                 # multi-service frontend/backend routing
 backend/
   server.js                 # local/Vercel entry point
   src/
@@ -10,12 +11,12 @@ backend/
     network/                # simulated nodes
     simulation/             # coordinator and isolated scenarios
   test/                     # Node built-in tests
-  vercel.json               # Vercel Node function routing
+  vercel.json               # standalone backend deployment config
 frontend/
   src/app/                  # dashboard and App Router labs
   src/components/           # shared graph, navigation, controls, transaction form
   src/lib/api.js            # REST and realtime/polling client
-  vercel.json               # Next.js deployment config
+  vercel.json               # standalone Next.js deployment config
 docs/                       # chaptered project documentation
 README.md                   # project entry point
 ```

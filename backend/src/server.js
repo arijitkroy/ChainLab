@@ -15,6 +15,13 @@ const websocketRoutes = new Map();
 
 expressApp.use(cors());
 expressApp.use(express.json({ limit: "1mb" }));
+expressApp.use((request, response, next) => {
+    const servicePrefix = "/api/backend";
+    if (request.url === servicePrefix || request.url.startsWith(`${servicePrefix}/`)) {
+        request.url = request.url.slice(servicePrefix.length) || "/";
+    }
+    next();
+});
 
 function sendHttpPayload(response, payload) {
     const normalized = payload?.success === false && typeof payload.error === "string"
